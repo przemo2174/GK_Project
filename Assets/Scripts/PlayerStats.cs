@@ -11,6 +11,10 @@ public class PlayerStats : MonoBehaviour
     private float barWidth;
     private float barHeight;
 
+    private CharacterController characterController;
+    private UnityStandardAssets.Characters.FirstPerson.FirstPersonController fpsController;
+    private Vector3 lastPosition;
+
     public Texture2D healthTexture;
     public Texture2D staminaTexture;
 
@@ -18,6 +22,9 @@ public class PlayerStats : MonoBehaviour
     {
         barHeight = Screen.height * 0.02f;
         barWidth = barHeight * 10.0f;
+
+        characterController = GetComponent<CharacterController>();
+        fpsController = GetComponent<UnityStandardAssets.Characters.FirstPerson.FirstPersonController>();
     }
 
     void OnGUI()
@@ -35,6 +42,34 @@ public class PlayerStats : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
     {
-	
+	    if(Input.GetKeyDown(KeyCode.P))
+        {
+            AddDamage(20);
+        }
 	}
+
+    void FixedUpdate()
+    {
+        if(characterController.isGrounded && Input.GetKey(KeyCode.LeftShift) && lastPosition != transform.position)
+        {
+            lastPosition = transform.position;
+            currentStamina -= 1;
+        }
+        else if(!Input.GetKeyDown(KeyCode.LeftShift))
+            currentStamina += 1;
+
+        currentStamina = Mathf.Clamp(currentStamina, 0, maxStamina);
+
+        if (currentStamina > 0)
+            fpsController.CanRun = true;
+        else
+            fpsController.CanRun = false;
+
+    }
+
+    private void AddDamage(float damage)
+    {
+        currentHealth -= damage;
+        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
+    }
 }
