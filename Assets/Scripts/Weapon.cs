@@ -14,12 +14,14 @@ public abstract class Weapon : MonoBehaviour
     protected UnityStandardAssets.Characters.FirstPerson.FirstPersonController fpsController;
     protected float zoomFieldOfView;
     protected float defaultFieldOfView;
+    protected EnemyBehaviour enemyBehaviour;
 
     private Rect crosshairPosition;
   
     // Use this for initialization
     protected virtual void Start()
     {
+        enemyBehaviour = GameObject.Find("z@walk").GetComponent<EnemyBehaviour>();
         fpsController = GetComponentInParent<UnityStandardAssets.Characters.FirstPerson.FirstPersonController>();
         defaultFieldOfView = fpsController.Camera.fieldOfView;
         crosshairPosition = new Rect((Screen.width - crosshairTexture.width) / 2, (Screen.height - crosshairTexture.height) / 2, crosshairTexture.width, crosshairTexture.height);
@@ -41,8 +43,11 @@ public abstract class Weapon : MonoBehaviour
     {
         if (Physics.Raycast(fpsController.Camera.transform.position, fpsController.Camera.transform.forward, out hit))
         {
-            if (hit.transform.tag == "Enemy" && hit.distance < range)
+            if (hit.collider != null && hit.distance < range)
+            {
                 Debug.Log("Enemy hit");
+                enemyBehaviour.AddDamage(20);
+            }
             else if (hit.distance < range)
             {
                 Debug.Log("Hit Wall: " + hit.point);
