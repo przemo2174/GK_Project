@@ -1,46 +1,39 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class RifleFire : MonoBehaviour 
+public class RifleFire : Weapon
 {
-    private float range = 15.0f;
-    public Texture2D crosshairTexture;
-    private Rect crosshairPosition;
-
-    private AudioSource gunSound;
-    private Animation shootAnimation;
-    private Vector3 forward;
-    private RaycastHit hit;
+    
     // Use this for initialization
-    void Start ()
+    protected override void Start ()
     {
-        crosshairPosition = new Rect((Screen.width - crosshairTexture.width) / 2, (Screen.height - crosshairTexture.height) / 2, crosshairTexture.width, crosshairTexture.height);
+        base.Start();
+        range = 20.0f;
+        zoomFieldOfView = 40.0f;
         gunSound = GetComponent<AudioSource>();
         shootAnimation = GetComponent<Animation>();
 	}
 	
-    void OnGUI()
-    {
-        GUI.DrawTexture(crosshairPosition, crosshairTexture);
-    }
-
 	// Update is called once per frame
-	void Update ()
+	protected override void Update ()
     {
-        forward = transform.TransformDirection(Vector3.forward);
+        base.Update();
+        if (Input.GetButton("Fire2"))
+        {
+            if (fpsController.Camera.fieldOfView > zoomFieldOfView)
+                fpsController.Camera.fieldOfView -= 2;
+        }
+        else
+        {
+            if (fpsController.Camera.fieldOfView < defaultFieldOfView)
+                fpsController.Camera.fieldOfView += 2;
+        }
+
         if (Input.GetKey(KeyCode.Mouse0))
         {
             gunSound.Play();
             shootAnimation.Play("RifleShoot");
-
-            if (Physics.Raycast(transform.position, forward, out hit))
-            {
-                if (hit.transform.tag == "Enemy" && hit.distance < range)
-                    Debug.Log("Enemy hit");
-                else if (hit.distance < range)
-                    Debug.Log("No hit");
-
-            }
+            Shoot(out hit);
         }
 	}
 }

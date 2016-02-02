@@ -49,6 +49,11 @@ namespace UnityStandardAssets.Characters.FirstPerson
             set { m_CanRun = value; }
         }
 
+        public Camera Camera
+        {
+            get { return m_Camera; }
+        }
+
         // Use this for initialization
         private void Start()
         {

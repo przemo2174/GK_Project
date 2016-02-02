@@ -1,45 +1,47 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class M9Fire : MonoBehaviour
+public class M9Fire : Weapon
 {
-    private float range = 10.0f;
-    public Texture2D crosshairTexture;
-    private Rect crosshairPosition;
 
-    private AudioSource gunSound;
-    private Animation shootAnimation;
-    private Vector3 forward;
-    private RaycastHit hit;
+    //public int maxAmmo = 100;
+    //public int clipSize = 10;
+    //private int currentAmmo = 40;
+    //private int currentClip;
+
     // Use this for initialization
-    void Start ()
+    protected override void Start()
     {
-        crosshairPosition = new Rect((Screen.width - crosshairTexture.width) / 2, (Screen.height - crosshairTexture.height) / 2, crosshairTexture.width, crosshairTexture.height);
+        base.Start();
+        range = 10.0f;
+        zoomFieldOfView = 40.0f;
+
         gunSound = GetComponent<AudioSource>();
-        shootAnimation = GetComponent<Animation>();
+        shootAnimation = GetComponent<Animation>();       
     }
 	
-    void OnGUI()
-    {
-        GUI.DrawTexture(crosshairPosition, crosshairTexture);
-    }
-
+   
 	// Update is called once per frame
-	void Update ()
+	protected override void Update ()
     {
-        forward = transform.TransformDirection(Vector3.forward);
+        base.Update();
+        if (Input.GetButton("Fire2"))
+        {
+            if (fpsController.Camera.fieldOfView > zoomFieldOfView)
+                fpsController.Camera.fieldOfView -= 2;
+        }
+        else
+        {
+            if (fpsController.Camera.fieldOfView < defaultFieldOfView)
+                fpsController.Camera.fieldOfView += 2;
+        }
+            
+            
         if (Input.GetButtonDown("Fire1"))
         {
             gunSound.Play();
             shootAnimation.Play("M9Shoot");
-
-            if(Physics.Raycast(transform.position, forward, out hit))
-            {
-                if (hit.transform.tag == "Enemy" && hit.distance < range)
-                    Debug.Log("Enemy hit");
-                else if (hit.distance < range)
-                    Debug.Log("No hit");
-            }
+            Shoot(out hit);
         }
 	}
 }
