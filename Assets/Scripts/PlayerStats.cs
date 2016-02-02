@@ -36,7 +36,6 @@ public class PlayerStats : MonoBehaviour
 	// Use this for initialization
 	void Start ()
     {
-	
 	}
 	
 	// Update is called once per frame
@@ -71,5 +70,7 @@ public class PlayerStats : MonoBehaviour
     {
         currentHealth -= damage;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
+        if (currentHealth == 0)
+            Application.Quit();
     }
 }

@@ -107,7 +107,7 @@ public class EnemyBehaviour : MonoBehaviour {
     public void AddDamage(int damage)
     {
         enemyHealth -= damage;
-        if (enemyHealth <= 0)
+        if (enemyHealth == 0)
             EnemyDead();
     }
 
@@ -128,7 +128,7 @@ public class EnemyBehaviour : MonoBehaviour {
                 enemyAnimation.Play("right_fall");
                 break;
         }
-        Destroy(gameObject, 5);
+        Destroy(gameObject, 2);
     }
 
 

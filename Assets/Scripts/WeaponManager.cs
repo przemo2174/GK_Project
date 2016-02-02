@@ -4,7 +4,6 @@ using System.Collections;
 public class WeaponManager : MonoBehaviour {
 
     private GameObject[] weapons;
-    private GameObject currentWeapon;
 
     // Use this for initialization
     void Start ()
@@ -20,7 +19,6 @@ public class WeaponManager : MonoBehaviour {
         Debug.Log(weapons[0].name);
         Debug.Log(weapons[1].name);
 
-        currentWeapon = weapons[0];
 	}
 	
 	// Update is called once per frame
@@ -30,14 +28,12 @@ public class WeaponManager : MonoBehaviour {
         {
             weapons[0].SetActive(true);
             weapons[1].SetActive(false);
-            currentWeapon = weapons[0];
         }
 
         if(Input.GetKeyDown(KeyCode.Alpha2))
         {
             weapons[0].SetActive(false);
             weapons[1].SetActive(true);
-            currentWeapon = weapons[1];
         }
 
         
