@@ -67,7 +67,7 @@ public class PlayerStats : MonoBehaviour
 
     }
 
-    private void AddDamage(float damage)
+    internal void AddDamage(float damage)
     {
         currentHealth -= damage;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);

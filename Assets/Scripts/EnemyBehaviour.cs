@@ -22,12 +22,17 @@ public class EnemyBehaviour : MonoBehaviour {
 	private Transform player;
 	private bool lookAtPlayer = false;
 	private Vector3 playerPosition;
-    private Animation enemyAnimation; 
+    internal Animation enemyAnimation; 
     private int enemyHealth;
+    private bool isAlive;
+
+    public event Action<float> Damage;
 
 	// Use this for initialization
 	void Start ()
     {
+        isAlive = true;
+        Damage += GameObject.Find("FPSController").GetComponent<PlayerStats>().AddDamage;
 		enemy = transform;
         //Rigidbody pozwala aby na obiekt oddziaływała fizyka.
         //Wyłaczenie oddziaływanie fizyki na XYZ - 
@@ -35,6 +40,8 @@ public class EnemyBehaviour : MonoBehaviour {
         // obiekt się przewróci. POZATYM NIE CHCEMY ABY WRÓG SIĘ TAK DZIWNIE OBRACAŁ ;).
         enemyAnimation = GetComponent<Animation>();
         enemyHealth = 100;
+        Rigidbody rigidbody = GetComponent<Rigidbody>();
+        rigidbody.freezeRotation = true;
         Collider collider = GetComponent<Collider>();
         if (collider != null)
             Debug.Log("collider works");
@@ -66,14 +73,17 @@ public class EnemyBehaviour : MonoBehaviour {
 			//Pierwszy parametr obecna pozycja drógi parametr pozycja do jakiej dążymy (czyli pozycja gracza).
 			//Trzeci parametr określa z jaką prędkością animacja/ruch ma zostać wykonany.
 			enemy.position = Vector3.MoveTowards(enemy.position, playerPosition, movementSpeed * Time.deltaTime);
-            enemyAnimation.Play("walk");
+            if(isAlive)
+                enemyAnimation.Play("walk");
 
 		}
         else if(dist <= spaceFromPlayer)
         { //Jeżeli wróg jest tuż przy graczu to niech ciągle na niego patrzy mimo że nie musi się już poruszać.
 			lookAtPlayer = true;
-            enemyAnimation.Play("attack");
-		}
+            if(isAlive)
+                enemyAnimation.Play("attack");
+            Damage(0.5f);
+        }
 
 		LookAtPlayer();
 	}
@@ -86,7 +96,7 @@ public class EnemyBehaviour : MonoBehaviour {
 
 			//Quaternion.LookRotation - zwraca quaternion na podstawie werktora kierunku/pozycji. 
 			//Potrzebujemy go aby obrócić wroga w stronę gracza.
-			Quaternion rotation = Quaternion.LookRotation(player.position - enemy.position);
+			Quaternion rotation = Quaternion.LookRotation(playerPosition- enemy.position);
 			//Obracamy wroga w stronę gracza.
 			enemy.rotation = Quaternion.Slerp(enemy.rotation, rotation, Time.deltaTime * rotationSpeed);
 		}
@@ -97,14 +107,13 @@ public class EnemyBehaviour : MonoBehaviour {
     public void AddDamage(int damage)
     {
         enemyHealth -= damage;
-        enemyAnimation.Play("right_fall");
-        Debug.Log("Health: " + enemyHealth);
         if (enemyHealth <= 0)
             EnemyDead();
     }
 
     void EnemyDead()
     {
+        isAlive = false;
         System.Random random = new System.Random();
         int value = random.Next(3);
         switch(value)
@@ -119,6 +128,7 @@ public class EnemyBehaviour : MonoBehaviour {
                 enemyAnimation.Play("right_fall");
                 break;
         }
+        Destroy(gameObject, 5);
     }
 
 
