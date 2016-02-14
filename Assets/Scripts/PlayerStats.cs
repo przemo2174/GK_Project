@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
+using UnityEditor;
 
 public class PlayerStats : MonoBehaviour
 {
@@ -71,6 +73,6 @@ public class PlayerStats : MonoBehaviour
         currentHealth -= damage;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
         if (currentHealth == 0)
-            Application.Quit();
+            Debug.Break();
     }
 }
